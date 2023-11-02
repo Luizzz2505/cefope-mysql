@@ -1,108 +1,66 @@
-CREATE DATABASE  IF NOT EXISTS `cefope` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `cefope`;
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
---
--- Host: 127.0.0.1    Database: cefope
--- ------------------------------------------------------
--- Server version	8.0.31
+-- Tabela Cadastro
+CREATE TABLE Cadastro (
+  id INT PRIMARY KEY,
+  cpf VARCHAR(25) NOT NULL,
+  nome TEXT NOT NULL,
+  data_nascimento DATE NOT NULL
+);
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+-- Tabela Atendimento
+CREATE TABLE Atendimento (
+  id INT PRIMARY KEY,
+  especialidade VARCHAR(60) NOT NULL,
+  doutor VARCHAR(50) NOT NULL,
+  data_atendimento DATE,
+  hora_atendimento TIME NOT NULL,
+  FOREIGN KEY (id) REFERENCES Cadastro(id)
+);
 
---
--- Table structure for table `atendimento`
---
+-- Tabela Médico
+CREATE TABLE Medico (
+  crm VARCHAR(30) PRIMARY KEY,
+  nome VARCHAR(50) NOT NULL,
+  especialidade VARCHAR(60) NOT NULL,
+  telefone VARCHAR(15),
+  email VARCHAR(50)
+);
 
-DROP TABLE IF EXISTS `atendimento`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `atendimento` (
-  `id` int NOT NULL,
-  `especialidade` varchar(255) NOT NULL,
-  `doutor` varchar(255) NOT NULL,
-  `data_atendimento` date DEFAULT NULL,
-  `hora_atendimento` time NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Inserção de dados nas tabelas
+-- Inserir dados na tabela "Cadastro"
+INSERT INTO Cadastro (id, cpf, nome, data_nascimento)
+VALUES
+  (1, '12345678901', 'João Silva', '1990-03-15'),
+  (2, '98765432109', 'Maria Souza', '1985-06-22');
 
---
--- Dumping data for table `atendimento`
---
+-- Inserir dados na tabela "Atendimento"
+INSERT INTO Atendimento (id, especialidade, doutor, data_atendimento, hora_atendimento)
+VALUES
+  (1, 'Terapia Ocupacional', 'Dr. Mendes', '2023-11-01', '09:30:00'),
+  (2, 'Psicomotricidade', 'Dra. Santos', '2023-11-02', '14:15:00');
 
-LOCK TABLES `atendimento` WRITE;
-/*!40000 ALTER TABLE `atendimento` DISABLE KEYS */;
-INSERT INTO `atendimento` VALUES (1,'Terapia Ocupacional','Dr. Mendes','2023-11-01','09:30:00'),(2,'Psicomotricidade','Dra. Santos','2023-11-02','14:15:00');
-/*!40000 ALTER TABLE `atendimento` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Inserir dados na tabela "Médico"
+INSERT INTO Medico (crm, nome, especialidade, telefone, email)
+VALUES
+  ('12345', 'Dr. Mendes', 'Terapia Ocupacional', '555-1234', 'dr.mendes@example.com'),
+  ('54321', 'Dra. Santos', 'Psicomotricidade', '555-5678', 'dra.santos@example.com');
 
---
--- Table structure for table `cadastro`
---
+-- Consulta na tabela "Atendimento" para ver o horário da consulta
+SELECT hora_atendimento
+FROM Atendimento;
 
-DROP TABLE IF EXISTS `cadastro`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cadastro` (
-  `id` int NOT NULL,
-  `cpf` varchar(255) NOT NULL,
-  `nome` text NOT NULL,
-  `data_nascimento` date NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Consulta juntando informações das tabelas
+SELECT 
+  Atendimento.data_atendimento AS Dia,
+  Atendimento.hora_atendimento AS Hora,
+  Medico.nome AS Medico,
+  Medico.especialidade AS Especialidade,
+  Cadastro.nome AS Paciente
+FROM Atendimento
+JOIN Medico ON Atendimento.doutor = Medico.nome
+JOIN Cadastro ON Atendimento.id = Cadastro.id;
 
---
--- Dumping data for table `cadastro`
---
 
-LOCK TABLES `cadastro` WRITE;
-/*!40000 ALTER TABLE `cadastro` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cadastro` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `medico`
---
 
-DROP TABLE IF EXISTS `medico`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `medico` (
-  `crm` varchar(30) NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `especialidade` varchar(60) NOT NULL,
-  `telefone` varchar(15) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`crm`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `medico`
---
 
-LOCK TABLES `medico` WRITE;
-/*!40000 ALTER TABLE `medico` DISABLE KEYS */;
-INSERT INTO `medico` VALUES ('12345','Dr. Silva','Cardiologia','555-1234','dr.silva@example.com'),('54321','Dra. Santos','Ortopedia','555-5678','dra.santos@example.com');
-/*!40000 ALTER TABLE `medico` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2023-11-02 11:33:47
